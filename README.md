@@ -8,28 +8,7 @@ Non-invasive automated detection and classification of animal vocalizations and 
 
 **Threat Detection**: Gunshots, Chainsaws, Human voices
 
-## Quick Start
 
-### Using Docker (Recommended)
-
-```bash
-# Build and run the full stack (API + Dashboard + Services)
-docker-compose up --build
-
-# Access:
-# - Dashboard: http://localhost:8501
-# - API: http://localhost:8000
-# - API Docs: http://localhost:8000/docs
-```
-
-### Local Installation
-
-```bash
-# Create conda environment
-conda env create -f environment.yml
-conda activate bmw
-
-# Or use pip
 pip install -r requirements.txt
 
 # Generate synthetic training data
@@ -48,11 +27,6 @@ python api/app.py
 streamlit run dashboard/app.py
 ```
 
-### Google Colab
-
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](notebooks/BMW_Training_Colab.ipynb)
-
-Open `notebooks/BMW_Training_Colab.ipynb` in Google Colab for GPU-accelerated training.
 
 ## Project Structure
 
@@ -219,68 +193,6 @@ Edit `configs/experiment1.yaml` to customize:
 - Feature extraction parameters
 - Class weights for imbalanced data
 
-## Deployment
-
-### Docker
-
-```bash
-docker build -t bmw-api .
-docker run -p 8000:8000 bmw-api
-```
-
-### Edge Deployment (Raspberry Pi / Jetson)
-
-```bash
-# Convert model to ONNX
-python deploy/edge/convert_to_onnx.py --model models/best_model.h5
-
-# Deploy on edge device
-cd deploy/edge
-docker build -f Dockerfile.edge -t bmw-edge .
-```
-
-### Cloud Deployment
-
-See `deploy/cloud/` for deployment guides:
-- AWS Elastic Beanstalk
-- GCP Cloud Run
-- Heroku
-
-## Adding New Species
-
-1. Collect audio samples for the new species
-2. Add entries to `data/manifest_train.csv` with the new label
-3. Retrain the model with updated class list
-4. Evaluate on test set including new species
-
-## Security and Privacy
-
-- API includes rate limiting and API key authentication
-- GPS coordinates can be masked in public dashboards
-- See `DATA_POLICY.md` for data handling guidelines
-
-## Documentation
-
-- **DESIGN.md**: Architecture decisions and trade-offs
-- **MODEL_CARD.md**: Model limitations, biases, and performance
-- **DATA_POLICY.md**: Privacy and ethical considerations
-
-## Contributing
-
-1. Fork the repository
-2. Create a feature branch
-3. Write tests for new functionality
-4. Submit a pull request
-
-## License
-
-MIT License - See LICENSE file
-
-## Acknowledgments
-
-- Audio samples for endangered species: Macaulay Library, Xeno-canto
-- Pre-trained models: ImageNet, AudioSet
-- Conservation partners: WWF, WCS
 
 ## Limitations
 
