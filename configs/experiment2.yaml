@@ -1,0 +1,32 @@
+project_name: "BMW_Experiment_2_Transfer_VGG"
+seed: 42
+
+data:
+  raw_dir: "data/raw"
+  manifest_path: "data/manifest.csv"
+  sample_rate: 44100
+  duration: 5.0
+  batch_size: 16
+  num_workers: 4
+  train_split: 0.7
+  val_split: 0.15
+  test_split: 0.15
+
+audio:
+  n_fft: 2048
+  hop_length: 512
+  n_mels: 128
+  fmin: 20
+  fmax: 16000
+
+model:
+  name: "vgg16"
+  pretrained: true
+  num_classes: 5
+
+training:
+  epochs: 30
+  learning_rate: 0.0001
+  early_stopping_patience: 7
+  checkpoint_dir: "experiments/checkpoints"
+  use_focal_loss: true
