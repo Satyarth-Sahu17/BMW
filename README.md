@@ -1,6 +1,6 @@
 # BioAcoustic Monitoring of Endangered Wildlife (BMW)
 
-## 🎯 Project Overview
+## Project Overview
 
 Non-invasive automated detection and classification of animal vocalizations and human threats (poaching/deforestation) using audio recorded in the field.
 
@@ -8,11 +8,11 @@ Non-invasive automated detection and classification of animal vocalizations and 
 
 **Threat Detection**: Gunshots, Chainsaws, Human voices
 
-## 🚀 Quick Start
+## Quick Start
 
 ### Using Docker (Recommended)
 
-\`\`\`bash
+```bash
 # Build and run the full stack (API + Dashboard + Services)
 docker-compose up --build
 
@@ -20,11 +20,11 @@ docker-compose up --build
 # - Dashboard: http://localhost:8501
 # - API: http://localhost:8000
 # - API Docs: http://localhost:8000/docs
-\`\`\`
+```
 
 ### Local Installation
 
-\`\`\`bash
+```bash
 # Create conda environment
 conda env create -f environment.yml
 conda activate bmw
@@ -46,7 +46,7 @@ python api/app.py
 
 # Start dashboard (in another terminal)
 streamlit run dashboard/app.py
-\`\`\`
+```
 
 ### Google Colab
 
@@ -54,9 +54,9 @@ streamlit run dashboard/app.py
 
 Open `notebooks/BMW_Training_Colab.ipynb` in Google Colab for GPU-accelerated training.
 
-## 📁 Project Structure
+## Project Structure
 
-\`\`\`
+```
 bmw/
 ├── api/                          # FastAPI service
 │   ├── app.py                   # Main API server
@@ -120,22 +120,22 @@ bmw/
 ├── DATA_POLICY.md
 ├── DESIGN.md
 └── MODEL_CARD.md
-\`\`\`
+```
 
-## 🎓 Usage Guide
+## Usage Guide
 
-### 1. Generate Synthetic Data
+### Generate Synthetic Data
 
-\`\`\`bash
+```bash
 python src/data/synthetic_data_generator.py \
     --output_dir data/raw \
     --num_samples 1000 \
     --classes wolf,snow_leopard,tiger,gunshot,chainsaw,background
-\`\`\`
+```
 
-### 2. Train a Model
+### Train a Model
 
-\`\`\`bash
+```bash
 # Using config file
 python src/train.py --config configs/experiment1.yaml
 
@@ -146,16 +146,16 @@ python src/train.py \
     --epochs 50 \
     --batch_size 32 \
     --learning_rate 0.001
-\`\`\`
+```
 
-### 3. Evaluate
+### Evaluate
 
-\`\`\`bash
+```bash
 python src/evaluate.py \
     --pred experiments/2025-01-20/predictions.json \
     --gt data/manifest_test.json \
     --out_dir experiments/2025-01-20/eval/
-\`\`\`
+```
 
 This generates:
 - `confusion_matrix.png` (absolute and normalized)
@@ -164,26 +164,26 @@ This generates:
 - `pr_curves.png`
 - `report.html` (comprehensive evaluation report)
 
-### 4. Make Predictions
+### Make Predictions
 
-\`\`\`bash
+```bash
 # Single file
 python api/predict_sample.py --audio samples/wolf_howl_1.wav
 
 # Using API
 curl -X POST "http://localhost:8000/predict" \
   -F "file=@samples/wolf_howl_1.wav"
-\`\`\`
+```
 
-### 5. Run Dashboard
+### Run Dashboard
 
-\`\`\`bash
+```bash
 streamlit run dashboard/app.py
-\`\`\`
+```
 
-## 🧪 Testing
+## Testing
 
-\`\`\`bash
+```bash
 # Run all tests
 pytest tests/ -v
 
@@ -192,25 +192,25 @@ pytest tests/ --cov=src --cov-report=html
 
 # Run specific test file
 pytest tests/test_evaluation.py -v
-\`\`\`
+```
 
-## 📊 Evaluation Metrics
+## Evaluation Metrics
 
 The evaluation suite computes comprehensive metrics:
 
-- **Confusion Matrix** (absolute & normalized)
-- **Classification Metrics**: Precision, Recall, F1-Score (micro/macro/weighted)
-- **ROC-AUC** (per-class and macro-average)
-- **PR-AUC** (Precision-Recall AUC)
-- **Matthews Correlation Coefficient (MCC)**
-- **Cohen's Kappa**
-- **Balanced Accuracy**
-- **Log-Loss**
-- **Calibration Metrics** (Brier score, reliability diagram)
-- **Detection Metrics**: mAP, IoU-based event matching
-- **Per-class Error Analysis** with misclassification examples
+- Confusion Matrix (absolute & normalized)
+- Classification Metrics: Precision, Recall, F1-Score (micro/macro/weighted)
+- ROC-AUC (per-class and macro-average)
+- PR-AUC (Precision-Recall AUC)
+- Matthews Correlation Coefficient (MCC)
+- Cohen's Kappa
+- Balanced Accuracy
+- Log-Loss
+- Calibration Metrics (Brier score, reliability diagram)
+- Detection Metrics: mAP, IoU-based event matching
+- Per-class Error Analysis with misclassification examples
 
-## 🔧 Configuration
+## Configuration
 
 Edit `configs/experiment1.yaml` to customize:
 - Model architecture
@@ -219,25 +219,25 @@ Edit `configs/experiment1.yaml` to customize:
 - Feature extraction parameters
 - Class weights for imbalanced data
 
-## 🚢 Deployment
+## Deployment
 
 ### Docker
 
-\`\`\`bash
+```bash
 docker build -t bmw-api .
 docker run -p 8000:8000 bmw-api
-\`\`\`
+```
 
 ### Edge Deployment (Raspberry Pi / Jetson)
 
-\`\`\`bash
+```bash
 # Convert model to ONNX
 python deploy/edge/convert_to_onnx.py --model models/best_model.h5
 
 # Deploy on edge device
 cd deploy/edge
 docker build -f Dockerfile.edge -t bmw-edge .
-\`\`\`
+```
 
 ### Cloud Deployment
 
@@ -246,49 +246,49 @@ See `deploy/cloud/` for deployment guides:
 - GCP Cloud Run
 - Heroku
 
-## 📈 Adding New Species
+## Adding New Species
 
 1. Collect audio samples for the new species
 2. Add entries to `data/manifest_train.csv` with the new label
 3. Retrain the model with updated class list
 4. Evaluate on test set including new species
 
-## 🔐 Security & Privacy
+## Security and Privacy
 
 - API includes rate limiting and API key authentication
 - GPS coordinates can be masked in public dashboards
 - See `DATA_POLICY.md` for data handling guidelines
 
-## 📚 Documentation
+## Documentation
 
 - **DESIGN.md**: Architecture decisions and trade-offs
 - **MODEL_CARD.md**: Model limitations, biases, and performance
 - **DATA_POLICY.md**: Privacy and ethical considerations
 
-## 🤝 Contributing
+## Contributing
 
 1. Fork the repository
 2. Create a feature branch
 3. Write tests for new functionality
 4. Submit a pull request
 
-## 📄 License
+## License
 
 MIT License - See LICENSE file
 
-## 🙏 Acknowledgments
+## Acknowledgments
 
 - Audio samples for endangered species: Macaulay Library, Xeno-canto
 - Pre-trained models: ImageNet, AudioSet
 - Conservation partners: WWF, WCS
 
-## ⚠️ Limitations
+## Limitations
 
 - False positives possible in noisy environments
 - Performance depends on dataset quality and balance
 - Requires human-in-the-loop review for critical alarms
 - Location data requires careful privacy handling
 
-## 📞 Support
+## Support
 
 For issues and questions, please open a GitHub issue or contact the development team.
