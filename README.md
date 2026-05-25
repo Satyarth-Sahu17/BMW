@@ -8,7 +8,28 @@ Non-invasive automated detection and classification of animal vocalizations and 
 
 **Threat Detection**: Gunshots, Chainsaws, Human voices
 
+## Quick Start
 
+### Using Docker (Recommended)
+
+```bash
+# Build and run the full stack (API + Dashboard + Services)
+docker-compose up --build
+
+# Access:
+# - Dashboard: http://localhost:8501
+# - API: http://localhost:8000
+# - API Docs: http://localhost:8000/docs
+```
+
+### Local Installation
+
+```bash
+# Create conda environment
+conda env create -f environment.yml
+conda activate bmw
+
+# Or use pip
 pip install -r requirements.txt
 
 # Generate synthetic training data
@@ -27,73 +48,126 @@ python api/app.py
 streamlit run dashboard/app.py
 ```
 
+### Google Colab
+
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/Satyarth-Sahu17/BMW/blob/main/notebooks/BMW_Training_Colab.ipynb)
+
+Open `notebooks/BMW_Training_Colab.ipynb` in Google Colab for GPU-accelerated training.
 
 ## Project Structure
 
 ```
 bmw/
-├── api/                          # FastAPI service
-│   ├── app.py                   # Main API server
-│   ├── predict_sample.py        # CLI prediction tool
-│   └── requirements.txt
-├── configs/                      # Experiment configurations
-│   └── experiment1.yaml
-├── dashboard/                    # Streamlit dashboard
-│   └── app.py
+├── backend/                      # Backend services
+│   ├── api/                      # FastAPI service
+│   │   ├── app.py               # Main API server
+│   │   ├── predict_sample.py    # CLI prediction tool
+│   │   └── requirements.txt
+│   ├── src/                     # Source code
+│   │   ├── models/              # Model architectures
+│   │   │   ├── __init__.py
+│   │   │   ├── cnn_keras.py     # TensorFlow/Keras models
+│   │   │   ├── cnn_pytorch.py   # PyTorch models
+│   │   │   ├── transfer_learning.py
+│   │   │   └── crnn.py          # CRNN architecture
+│   │   ├── data/                # Data utilities
+│   │   │   ├── __init__.py
+│   │   │   ├── data_loader.py   # Dataset classes
+│   │   │   ├── augmentation.py  # Audio augmentation
+│   │   │   ├── preprocessing.py # Audio preprocessing
+│   │   │   └── synthetic_data_generator.py
+│   │   ├── eval/                # Evaluation tools
+│   │   │   ├── __init__.py
+│   │   │   ├── confusion_and_metrics.py # Main evaluation suite
+│   │   │   └── interpretability.py      # Grad-CAM, SHAP analysis
+│   │   ├── utils/               # Utility functions
+│   │   │   ├── __init__.py
+│   │   │   ├── config.py        # Configuration loader
+│   │   │   ├── logger.py        # Logging utilities
+│   │   │   └── visualization.py # Visualization helpers
+│   │   ├── train.py             # Training script
+│   │   └── evaluate.py          # Evaluation script
+│   ├── configs/                 # Experiment configurations
+│   │   └── experiment1.yaml     # Sample experiment config
+│   ├── models/                  # Trained model artifacts
+│   └── requirements.txt         # Python dependencies
+│
+├── frontend/                     # Frontend dashboard
+│   ├── src/
+│   │   ├── components/          # React components
+│   │   │   ├── LandingPage.jsx           # Welcome page with features
+│   │   │   ├── UploadPage.jsx            # File upload interface
+│   │   │   ├── ResultsDashboard.jsx      # Main analysis results
+│   │   │   ├── ComparisonPage.jsx        # Contract comparison view
+│   │   │   ├── LoadingScreen.jsx         # Analysis progress indicator
+│   │   │   ├── RiskGauge.jsx             # Circular risk score display
+│   │   │   └── IssueCard.jsx             # Expandable issue details
+│   │   ├── data/                # Mock data
+│   │   │   └── mockContractData.js       # Sample contract analysis data
+│   │   ├── App.jsx              # Main application component
+│   │   └── index.css            # Global styles and Tailwind imports
+│   └── package.json             # Frontend dependencies
+│
 ├── data/                        # Dataset folder
 │   ├── raw/                     # Raw audio files
 │   ├── processed/               # Preprocessed features
 │   ├── manifest_train.csv       # Training manifest
 │   └── manifest_test.csv        # Test manifest
+│
 ├── deploy/                      # Deployment artifacts
-│   ├── docker/
-│   ├── kubernetes/
+│   ├── docker/                  # Docker configurations
+│   ├── kubernetes/              # Kubernetes manifests
+│   ├── cloud/                   # Cloud deployment guides
+│   │   ├── aws_eb.md
+│   │   ├── gcp_cloudrun.md
+│   │   └── heroku.md
 │   └── edge/                    # Edge device deployment
-├── experiments/                 # Training runs and results
-├── models/                      # Trained models
+│       ├── Dockerfile.edge
+│       └── convert_to_onnx.py
+│
 ├── notebooks/                   # Jupyter notebooks
-│   ├── BMW_Training_Colab.ipynb
-│   └── EDA_and_Preprocessing.ipynb
-├── samples/                     # Sample audio files
-├── src/
-│   ├── data/                    # Data utilities
-│   │   ├── __init__.py
-│   │   ├── data_loader.py       # Dataset classes
-│   │   ├── augmentation.py      # Audio augmentation
-│   │   ├── preprocessing.py     # Audio preprocessing
-│   │   └── synthetic_data_generator.py
-│   ├── eval/                    # Evaluation tools
-│   │   ├── __init__.py
-│   │   ├── confusion_and_metrics.py  # Main evaluation suite
-│   │   └── interpretability.py       # Grad-CAM, SHAP
-│   ├── models/                  # Model architectures
-│   │   ├── __init__.py
-│   │   ├── cnn_keras.py        # TensorFlow/Keras models
-│   │   ├── cnn_pytorch.py      # PyTorch models
-│   │   ├── transfer_learning.py
-│   │   └── crnn.py             # CRNN architecture
-│   ├── utils/                   # Utilities
-│   │   ├── __init__.py
-│   │   ├── config.py
-│   │   ├── logger.py
-│   │   └── visualization.py
-│   ├── train.py                 # Training script
-│   └── evaluate.py              # Evaluation script
+│   ├── BMW_Training_Colab.ipynb # Google Colab training notebook
+│   ├── EDA_and_Preprocessing.ipynb # Exploratory data analysis
+│   └── Model_Evaluation.ipynb   # Model evaluation analysis
+│
+├── samples/                     # Sample audio files for testing
+│   ├── wolf_howl_1.wav
+│   ├── gunshot_1.wav
+│   └── chainsaw_1.wav
+│
+├── experiments/                 # Training runs and results
+│   └── latest/
+│       ├── predictions.json
+│       ├── metrics_summary.json
+│       └── eval/
+│           ├── confusion_matrix.png
+│           ├── roc_curves.png
+│           ├── pr_curves.png
+│           └── report.html
+│
 ├── tests/                       # Unit and integration tests
-│   ├── test_preprocessing.py
-│   ├── test_models.py
-│   └── test_evaluation.py
+│   ├── __init__.py
+│   ├── test_preprocessing.py    # Data preprocessing tests
+│   ├── test_models.py           # Model architecture tests
+│   ├── test_data_loader.py      # Data loader tests
+│   └── test_evaluation.py       # Evaluation metrics tests
+│
 ├── .github/
 │   └── workflows/
-│       └── ci.yml               # GitHub Actions CI
-├── docker-compose.yml
-├── Dockerfile
-├── requirements.txt
-├── environment.yml
-├── LICENSE
-├── DATA_POLICY.md
-├── DESIGN.md
-└── MODEL_CARD.md
+│       ├── ci.yml               # GitHub Actions CI/CD
+│       └── deploy.yml           # Deployment workflow
+│
+├── docker-compose.yml           # Multi-container Docker setup
+├── Dockerfile                   # Backend Docker image
+├── .dockerignore
+├── .gitignore
+├── requirements.txt             # Python dependencies
+├── environment.yml              # Conda environment file
+├── LICENSE                      # MIT License
+├── DATA_POLICY.md              # Privacy and data handling
+├── DESIGN.md                   # Architecture and design decisions
+├── MODEL_CARD.md               # Model documentation and limitations
+└── README.md                   # This file
 ```
 
 ## Usage Guide
@@ -101,7 +175,7 @@ bmw/
 ### Generate Synthetic Data
 
 ```bash
-python src/data/synthetic_data_generator.py \
+python backend/src/data/synthetic_data_generator.py \
     --output_dir data/raw \
     --num_samples 1000 \
     --classes wolf,snow_leopard,tiger,gunshot,chainsaw,background
@@ -111,10 +185,10 @@ python src/data/synthetic_data_generator.py \
 
 ```bash
 # Using config file
-python src/train.py --config configs/experiment1.yaml
+python backend/src/train.py --config backend/configs/experiment1.yaml
 
 # With command-line arguments
-python src/train.py \
+python backend/src/train.py \
     --framework keras \
     --model_type cnn \
     --epochs 50 \
@@ -125,7 +199,7 @@ python src/train.py \
 ### Evaluate
 
 ```bash
-python src/evaluate.py \
+python backend/src/evaluate.py \
     --pred experiments/2025-01-20/predictions.json \
     --gt data/manifest_test.json \
     --out_dir experiments/2025-01-20/eval/
@@ -142,7 +216,7 @@ This generates:
 
 ```bash
 # Single file
-python api/predict_sample.py --audio samples/wolf_howl_1.wav
+python backend/api/predict_sample.py --audio samples/wolf_howl_1.wav
 
 # Using API
 curl -X POST "http://localhost:8000/predict" \
@@ -162,7 +236,7 @@ streamlit run dashboard/app.py
 pytest tests/ -v
 
 # Run with coverage
-pytest tests/ --cov=src --cov-report=html
+pytest tests/ --cov=backend/src --cov-report=html
 
 # Run specific test file
 pytest tests/test_evaluation.py -v
@@ -186,21 +260,117 @@ The evaluation suite computes comprehensive metrics:
 
 ## Configuration
 
-Edit `configs/experiment1.yaml` to customize:
+Edit `backend/configs/experiment1.yaml` to customize:
 - Model architecture
 - Training hyperparameters
 - Data augmentation settings
 - Feature extraction parameters
 - Class weights for imbalanced data
 
+## Deployment
+
+### Docker
+
+```bash
+docker build -t bmw-api .
+docker run -p 8000:8000 bmw-api
+```
+
+### Docker Compose (Full Stack)
+
+```bash
+docker-compose up --build
+```
+
+This starts:
+- Backend API on `http://localhost:8000`
+- Frontend on `http://localhost:3000`
+- Streamlit Dashboard on `http://localhost:8501`
+
+### Edge Deployment (Raspberry Pi / Jetson)
+
+```bash
+# Convert model to ONNX
+python deploy/edge/convert_to_onnx.py --model backend/models/best_model.h5
+
+# Deploy on edge device
+cd deploy/edge
+docker build -f Dockerfile.edge -t bmw-edge .
+docker run -p 8000:8000 bmw-edge
+```
+
+### Cloud Deployment
+
+See deployment guides in `deploy/cloud/`:
+- **AWS Elastic Beanstalk**: `deploy/cloud/aws_eb.md`
+- **GCP Cloud Run**: `deploy/cloud/gcp_cloudrun.md`
+- **Heroku**: `deploy/cloud/heroku.md`
+
+## Adding New Species
+
+1. Collect audio samples for the new species
+2. Add entries to `data/manifest_train.csv` with the new label
+3. Update the config file with the new class
+4. Retrain the model: `python backend/src/train.py --config backend/configs/experiment1.yaml`
+5. Evaluate on test set including new species
+
+## Security and Privacy
+
+- API includes rate limiting and API key authentication
+- GPS coordinates can be masked in public dashboards
+- All audio data encrypted in transit and at rest
+- See `DATA_POLICY.md` for comprehensive data handling guidelines
+
+## Documentation
+
+- **DESIGN.md**: Architecture decisions, trade-offs, and system design
+- **MODEL_CARD.md**: Model limitations, biases, performance benchmarks, and training details
+- **DATA_POLICY.md**: Privacy considerations, ethical guidelines, and data handling best practices
+
+## Contributing
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Make your changes and write tests
+4. Commit your changes (`git commit -m 'Add amazing feature'`)
+5. Push to the branch (`git push origin feature/amazing-feature`)
+6. Open a Pull Request
+
+## License
+
+MIT License - See [LICENSE](LICENSE) file for details
+
+## Acknowledgments
+
+- Audio samples for endangered species: [Macaulay Library](https://www.macaulaylibrary.org/), [Xeno-canto](https://www.xeno-canto.org/)
+- Pre-trained models: ImageNet, AudioSet
+- Conservation partners: [WWF](https://www.worldwildlife.org/), [WCS](https://www.wcs.org/)
 
 ## Limitations
 
-- False positives possible in noisy environments
-- Performance depends on dataset quality and balance
-- Requires human-in-the-loop review for critical alarms
-- Location data requires careful privacy handling
+- False positives possible in noisy environments (requires field testing and validation)
+- Performance depends on dataset quality and class balance
+- Requires human-in-the-loop review for critical alarms in production
+- Location data requires careful privacy handling to protect endangered species habitats
+- Model performance may vary across different geographical regions
+
+## Citation
+
+If you use BMW in your research, please cite:
+
+```bibtex
+@software{bmw2025,
+  title={BioAcoustic Monitoring of Endangered Wildlife},
+  author={Sahu, Satyarth},
+  year={2025},
+  url={https://github.com/Satyarth-Sahu17/BMW}
+}
+```
 
 ## Support
 
-For issues and questions, please open a GitHub issue or contact the development team.
+For issues and questions:
+- 📝 Open a [GitHub issue](https://github.com/Satyarth-Sahu17/BMW/issues)
+- 📧 Contact the development team
+- 🐛 Report bugs with detailed reproduction steps
+- 💡 Suggest features and improvements
