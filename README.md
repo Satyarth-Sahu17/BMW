@@ -8,28 +8,6 @@ Non-invasive automated detection and classification of animal vocalizations and 
 
 **Threat Detection**: Gunshots, Chainsaws, Human voices
 
-## Quick Start
-
-### Using Docker (Recommended)
-
-```bash
-# Build and run the full stack (API + Dashboard + Services)
-docker-compose up --build
-
-# Access:
-# - Dashboard: http://localhost:8501
-# - API: http://localhost:8000
-# - API Docs: http://localhost:8000/docs
-```
-
-### Local Installation
-
-```bash
-# Create conda environment
-conda env create -f environment.yml
-conda activate bmw
-
-# Or use pip
 pip install -r requirements.txt
 
 # Generate synthetic training data
@@ -47,12 +25,6 @@ python api/app.py
 # Start dashboard (in another terminal)
 streamlit run dashboard/app.py
 ```
-
-### Google Colab
-
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/Satyarth-Sahu17/BMW/blob/main/notebooks/BMW_Training_Colab.ipynb)
-
-Open `notebooks/BMW_Training_Colab.ipynb` in Google Colab for GPU-accelerated training.
 
 ## Project Structure
 
@@ -170,58 +142,6 @@ bmw/
 └── README.md                   # This file
 ```
 
-## Usage Guide
-
-### Generate Synthetic Data
-
-```bash
-python backend/src/data/synthetic_data_generator.py \
-    --output_dir data/raw \
-    --num_samples 1000 \
-    --classes wolf,snow_leopard,tiger,gunshot,chainsaw,background
-```
-
-### Train a Model
-
-```bash
-# Using config file
-python backend/src/train.py --config backend/configs/experiment1.yaml
-
-# With command-line arguments
-python backend/src/train.py \
-    --framework keras \
-    --model_type cnn \
-    --epochs 50 \
-    --batch_size 32 \
-    --learning_rate 0.001
-```
-
-### Evaluate
-
-```bash
-python backend/src/evaluate.py \
-    --pred experiments/2025-01-20/predictions.json \
-    --gt data/manifest_test.json \
-    --out_dir experiments/2025-01-20/eval/
-```
-
-This generates:
-- `confusion_matrix.png` (absolute and normalized)
-- `metrics_summary.json` (all metrics)
-- `roc_curves.png`
-- `pr_curves.png`
-- `report.html` (comprehensive evaluation report)
-
-### Make Predictions
-
-```bash
-# Single file
-python backend/api/predict_sample.py --audio samples/wolf_howl_1.wav
-
-# Using API
-curl -X POST "http://localhost:8000/predict" \
-  -F "file=@samples/wolf_howl_1.wav"
-```
 
 ### Run Dashboard
 
@@ -234,9 +154,6 @@ streamlit run dashboard/app.py
 ```bash
 # Run all tests
 pytest tests/ -v
-
-# Run with coverage
-pytest tests/ --cov=backend/src --cov-report=html
 
 # Run specific test file
 pytest tests/test_evaluation.py -v
@@ -267,44 +184,6 @@ Edit `backend/configs/experiment1.yaml` to customize:
 - Feature extraction parameters
 - Class weights for imbalanced data
 
-## Deployment
-
-### Docker
-
-```bash
-docker build -t bmw-api .
-docker run -p 8000:8000 bmw-api
-```
-
-### Docker Compose (Full Stack)
-
-```bash
-docker-compose up --build
-```
-
-This starts:
-- Backend API on `http://localhost:8000`
-- Frontend on `http://localhost:3000`
-- Streamlit Dashboard on `http://localhost:8501`
-
-### Edge Deployment (Raspberry Pi / Jetson)
-
-```bash
-# Convert model to ONNX
-python deploy/edge/convert_to_onnx.py --model backend/models/best_model.h5
-
-# Deploy on edge device
-cd deploy/edge
-docker build -f Dockerfile.edge -t bmw-edge .
-docker run -p 8000:8000 bmw-edge
-```
-
-### Cloud Deployment
-
-See deployment guides in `deploy/cloud/`:
-- **AWS Elastic Beanstalk**: `deploy/cloud/aws_eb.md`
-- **GCP Cloud Run**: `deploy/cloud/gcp_cloudrun.md`
-- **Heroku**: `deploy/cloud/heroku.md`
 
 ## Adding New Species
 
@@ -314,18 +193,6 @@ See deployment guides in `deploy/cloud/`:
 4. Retrain the model: `python backend/src/train.py --config backend/configs/experiment1.yaml`
 5. Evaluate on test set including new species
 
-## Security and Privacy
-
-- API includes rate limiting and API key authentication
-- GPS coordinates can be masked in public dashboards
-- All audio data encrypted in transit and at rest
-- See `DATA_POLICY.md` for comprehensive data handling guidelines
-
-## Documentation
-
-- **DESIGN.md**: Architecture decisions, trade-offs, and system design
-- **MODEL_CARD.md**: Model limitations, biases, performance benchmarks, and training details
-- **DATA_POLICY.md**: Privacy considerations, ethical guidelines, and data handling best practices
 
 ## Contributing
 
@@ -353,24 +220,3 @@ MIT License - See [LICENSE](LICENSE) file for details
 - Requires human-in-the-loop review for critical alarms in production
 - Location data requires careful privacy handling to protect endangered species habitats
 - Model performance may vary across different geographical regions
-
-## Citation
-
-If you use BMW in your research, please cite:
-
-```bibtex
-@software{bmw2025,
-  title={BioAcoustic Monitoring of Endangered Wildlife},
-  author={Sahu, Satyarth},
-  year={2025},
-  url={https://github.com/Satyarth-Sahu17/BMW}
-}
-```
-
-## Support
-
-For issues and questions:
-- 📝 Open a [GitHub issue](https://github.com/Satyarth-Sahu17/BMW/issues)
-- 📧 Contact the development team
-- 🐛 Report bugs with detailed reproduction steps
-- 💡 Suggest features and improvements
